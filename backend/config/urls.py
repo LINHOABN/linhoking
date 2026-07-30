@@ -35,11 +35,12 @@ def api_root(request):
 
 urlpatterns = [
     path('', api_root, name='api-root'),
+    path('api/', api_root, name='api-index'),
     path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),
     path('api/categories/', include('categories.urls')),
     path('api/products/', include('products.urls')),
     path('api/chat/', include('chat.urls')),
+    path('api/', include('users.urls')),
 ]
 
 if settings.DEBUG:
