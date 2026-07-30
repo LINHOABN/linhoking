@@ -1,0 +1,19 @@
+.page {
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-8);
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.title {
+  font-size: 28px;
+}
+
+.text {
+  font-size: 14.5px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}

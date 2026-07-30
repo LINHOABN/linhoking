@@ -1,0 +1,45 @@
+:root {
+  /* Couleurs */
+  --color-primary: #1a7a44;
+  --color-primary-dark: #0f5c32;
+  --color-primary-light: #e8f5ec;
+  --color-bg: #f7f8f7;
+  --color-surface: #ffffff;
+  --color-text: #17191a;
+  --color-text-muted: #6b7280;
+  --color-text-faint: #9aa0a6;
+  --color-border: #e7e8e7;
+  --color-danger: #d9433c;
+  --color-danger-light: #fbe9e8;
+  --color-warning: #b8860b;
+
+  /* Typographie */
+  --font-display: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Rayons */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* Ombres */
+  --shadow-sm: 0 1px 2px rgba(23, 25, 26, 0.05), 0 1px 3px rgba(23, 25, 26, 0.06);
+  --shadow-md: 0 4px 12px rgba(23, 25, 26, 0.07);
+  --shadow-lg: 0 12px 32px rgba(23, 25, 26, 0.1);
+
+  /* Espacements */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Layout */
+  --container-width: 1240px;
+  --header-height: 76px;
+  --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}

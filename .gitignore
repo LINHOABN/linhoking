@@ -1,0 +1,31 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+.venv/
+venv/
+ENV/
+env/
+
+# Media & Uploads
+backend/media/*
+!backend/media/.gitkeep
+
+# Node / JS
+node_modules/
+dist/
+.output/
+
+# Vercel & IDEs
+.vercel/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local

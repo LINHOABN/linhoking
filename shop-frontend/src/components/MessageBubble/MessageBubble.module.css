@@ -1,0 +1,43 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 78%;
+}
+
+.own {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.bubble {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 9px 14px;
+  border-radius: 16px 16px 16px 4px;
+}
+
+.own .bubble {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  border-radius: 16px 16px 4px 16px;
+}
+
+.text {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.own .text {
+  color: #fff;
+}
+
+.time {
+  font-size: 10.5px;
+  color: var(--color-text-faint);
+  margin-top: 3px;
+  padding: 0 4px;
+}
