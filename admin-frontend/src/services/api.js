@@ -1,4 +1,4 @@
-export const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+export const BASE_URL = import.meta.env.VITE_API_URL || "https://linhoking-me6f.vercel.app/api";
 
 export async function apiRequest(path, { method = "GET", body, token } = {}) {
     const headers = {};
