@@ -18,7 +18,7 @@ class Product(models.Model):
     image_principale = models.TextField(blank=True, null=True)
     categorie = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     vues_count = models.PositiveIntegerField(default=0)
-    date_creation = models.DateTimeField(auto_auto_now_add=True if hasattr(models, 'auto_auto_now_add') else False, auto_now_add=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
     est_publie = models.BooleanField(default=True)
 
