@@ -4,13 +4,12 @@ from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.db.models import F, Sum
 from products.models import Product, ProductImage
-from products.serializers import ProductSerializer, ProductImageSerializer
+from products.serializers import ProductSerializer, ProductListSerializer, ProductImageSerializer
 from core.permissions import IsAdminOrReadOnly
 from rest_framework.permissions import IsAdminUser, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 
 class ProductViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductSerializer
     permission_classes = [IsAdminOrReadOnly]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = 'slug'
@@ -21,12 +20,18 @@ class ProductViewSet(viewsets.ModelViewSet):
     ordering_fields = ['prix', 'date_creation', 'vues_count']
     ordering = ['-date_creation']
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ProductListSerializer
+        return ProductSerializer
+
     def get_queryset(self):
         try:
+            qs = Product.objects.select_related('categorie').prefetch_related('images')
             user = getattr(self.request, 'user', None)
             if user and user.is_authenticated and user.is_staff:
-                return Product.objects.all()
-            return Product.objects.filter(est_publie=True)
+                return qs.all()
+            return qs.filter(est_publie=True)
         except Exception:
             return Product.objects.none()
 

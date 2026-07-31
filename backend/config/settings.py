@@ -96,7 +96,7 @@ if _db_url:
         DATABASES = {
             'default': _dj.config(
                 default=_db_url,
-                conn_max_age=0,  # 0 = close connection after each request (safe for serverless)
+                conn_max_age=600,  # 600 seconds = reuse SQL connection across requests (fast serverless)
                 ssl_require=True,
             )
         }

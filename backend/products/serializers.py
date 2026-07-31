@@ -12,6 +12,19 @@ class ProductImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
+class ProductListSerializer(serializers.ModelSerializer):
+    categorie = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'nom', 'slug', 'prix', 
+            'image_principale', 'categorie', 
+            'vues_count', 'date_creation', 'est_publie'
+        ]
+        read_only_fields = fields
+
+
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     uploaded_images_data = serializers.ListField(
