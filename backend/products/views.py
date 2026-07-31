@@ -1,6 +1,7 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.db.models import F, Sum
 from products.models import Product, ProductImage
 from products.serializers import ProductSerializer, ProductImageSerializer
@@ -11,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [IsAdminOrReadOnly]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = 'slug'
     
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -32,7 +34,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         try:
             return super().list(request, *args, **kwargs)
         except Exception as e:
-            # Fallback safe response if query or serialization fails during db setup
             return Response([], status=status.HTTP_200_OK)
 
     def get_object(self):
@@ -77,7 +78,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                     'prix': p.prix,
                     'vues_count': p.vues_count,
                     'categorie_nom': p.categorie.nom if p.categorie else '',
-                    'image': p.image_principale.url if p.image_principale else (p.images.first().image.url if p.images.exists() else None)
+                    'image': p.image_principale if p.image_principale else (p.images.first().image if p.images.exists() else None)
                 })
 
             return Response({
@@ -96,6 +97,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ProductImageViewSet(viewsets.ModelViewSet):
     serializer_class = ProductImageSerializer
     queryset = ProductImage.objects.all()
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     
     def get_permissions(self):
         if self.action in ['create', 'destroy', 'update', 'partial_update']:

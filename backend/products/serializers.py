@@ -1,3 +1,4 @@
+import base64
 from rest_framework import serializers
 from products.models import Product, ProductImage
 from categories.models import Category
@@ -57,6 +58,21 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         extra_images = validated_data.pop('uploaded_images_data', [])
+        request = self.context.get('request')
+        
+        if request and request.FILES:
+            if 'image_principale' in request.FILES and not validated_data.get('image_principale'):
+                f = request.FILES['image_principale']
+                mime = f.content_type or 'image/jpeg'
+                b64 = base64.b64encode(f.read()).decode('utf-8')
+                validated_data['image_principale'] = f"data:{mime};base64,{b64}"
+            
+            if 'uploaded_images' in request.FILES:
+                for f in request.FILES.getlist('uploaded_images'):
+                    mime = f.content_type or 'image/jpeg'
+                    b64 = base64.b64encode(f.read()).decode('utf-8')
+                    extra_images.append(f"data:{mime};base64,{b64}")
+
         product = super().create(validated_data)
         for img_str in extra_images:
             if img_str:
@@ -65,6 +81,21 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         extra_images = validated_data.pop('uploaded_images_data', [])
+        request = self.context.get('request')
+        
+        if request and request.FILES:
+            if 'image_principale' in request.FILES:
+                f = request.FILES['image_principale']
+                mime = f.content_type or 'image/jpeg'
+                b64 = base64.b64encode(f.read()).decode('utf-8')
+                validated_data['image_principale'] = f"data:{mime};base64,{b64}"
+            
+            if 'uploaded_images' in request.FILES:
+                for f in request.FILES.getlist('uploaded_images'):
+                    mime = f.content_type or 'image/jpeg'
+                    b64 = base64.b64encode(f.read()).decode('utf-8')
+                    extra_images.append(f"data:{mime};base64,{b64}")
+
         product = super().update(instance, validated_data)
         if extra_images:
             for img_str in extra_images:
