@@ -6,6 +6,9 @@ from django.utils.text import slugify
 from categories.models import Category
 from decimal import Decimal
 
+def validate_image_extension(value):
+    pass
+
 class Product(models.Model):
     nom = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
