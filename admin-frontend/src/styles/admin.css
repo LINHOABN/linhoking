@@ -790,18 +790,142 @@ textarea.form-input {
     gap: 6px;
 }
 
+/* ─── Mobile Topbar ─── */
+.mobile-topbar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 56px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.mobile-topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.mobile-topbar-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #d4af37;
+    flex-shrink: 0;
+}
+
+.mobile-topbar-name {
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+}
+
+.mobile-topbar-sub {
+    font-size: 9px;
+    font-weight: 700;
+    color: #d4af37;
+    letter-spacing: 0.12em;
+    background: rgba(212, 175, 55, 0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.mobile-hamburger {
+    background: none;
+    border: none;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.mobile-hamburger:hover {
+    background: var(--bg-hover);
+}
+
+/* ─── Sidebar Overlay ─── */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 80;
+}
+
+/* ─── Sidebar close button (mobile only) ─── */
+.sidebar-close-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 8px;
+    align-self: flex-end;
+    margin: 8px 8px 0 0;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition), background var(--transition);
+}
+
+.sidebar-close-btn:hover {
+    color: var(--text);
+    background: var(--bg-hover);
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 900px) {
+    /* Layout principal : 1 colonne, topbar au dessus */
     .admin-shell {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: unset;
     }
 
+    /* Topbar visible */
+    .mobile-topbar {
+        display: flex;
+    }
+
+    /* Overlay visible quand sidebar ouverte */
+    .sidebar-overlay {
+        display: block;
+    }
+
+    /* Sidebar devient un drawer latéral */
     .sidebar {
-        display: none;
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100dvh;
+        width: 260px;
+        z-index: 90;
+        transform: translateX(-100%);
+        transition: transform 260ms cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .sidebar.sidebar--open {
+        transform: translateX(0);
+    }
+
+    /* Bouton fermer visible sur mobile */
+    .sidebar-close-btn {
+        display: flex;
     }
 
     .admin-main {
         padding: 20px 16px;
+        flex: 1;
     }
 
     .stats-grid {
@@ -810,5 +934,54 @@ textarea.form-input {
 
     .form-row {
         grid-template-columns: 1fr;
+    }
+
+    /* Page header empilé sur petits écrans */
+    .page-header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    /* Tables responsives : scroll horizontal */
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        min-width: 580px;
+    }
+
+    /* Masquer colonnes secondaires sur très petit */
+    .table-thumb {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mobile-topbar-sub {
+        display: none;
+    }
+
+    .admin-main {
+        padding: 16px 12px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .login-card {
+        padding: 28px 20px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 8px 14px;
     }
 }
