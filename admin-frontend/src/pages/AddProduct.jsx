@@ -3,12 +3,46 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Save, Upload, X, Plus } from "lucide-react";
 import { productService, categoryService } from "../services/data.js";
 
-const fileToBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
+const compressImage = (file, maxWidth = 1000, maxHeight = 1000, quality = 0.75) => {
+    return new Promise((resolve, reject) => {
+        if (!file || !(file instanceof File || file instanceof Blob)) {
+            return resolve("");
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const dataUrl = canvas.toDataURL("image/webp", quality);
+                resolve(dataUrl);
+            };
+            img.onerror = () => resolve(event.target.result);
+        };
+        reader.onerror = error => reject(error);
+    });
+};
 
 export default function AddProduct() {
     const navigate = useNavigate();
@@ -88,12 +122,17 @@ export default function AddProduct() {
         try {
             let mainImageBase64 = form.imageUrl || "";
             if (imageFile) {
-                mainImageBase64 = await fileToBase64(imageFile);
+                mainImageBase64 = await compressImage(imageFile);
             }
 
             let extraImagesBase64 = [];
             if (extraFiles && extraFiles.length > 0) {
-                extraImagesBase64 = await Promise.all(extraFiles.map(fileToBase64));
+                extraImagesBase64 = await Promise.all(extraFiles.map(f => compressImage(f)));
+            }
+
+            // Auto-assign first gallery image as main image if no main image selected
+            if (!mainImageBase64 && extraImagesBase64.length > 0) {
+                mainImageBase64 = extraImagesBase64[0];
             }
 
             const data = {
@@ -110,11 +149,19 @@ export default function AddProduct() {
             else await productService.create(data);
             navigate("/produits");
         } catch (err) {
-            setError(err.message || "Une erreur est survenue lors de l'enregistrement du produit.");
+            let errMsg = err.message || "Une erreur est survenue lors de l'enregistrement du produit.";
+            try {
+                const parsed = JSON.parse(errMsg);
+                if (typeof parsed === 'object') {
+                    errMsg = Object.entries(parsed).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`).join(" | ");
+                }
+            } catch (_) { }
+            setError(errMsg);
         } finally {
             setSaving(false);
         }
     }
+
 
     return (
         <div>

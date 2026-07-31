@@ -73,10 +73,16 @@ class ProductSerializer(serializers.ModelSerializer):
                     b64 = base64.b64encode(f.read()).decode('utf-8')
                     extra_images.append(f"data:{mime};base64,{b64}")
 
+        if not validated_data.get('image_principale') and extra_images:
+            validated_data['image_principale'] = extra_images[0]
+
         product = super().create(validated_data)
         for img_str in extra_images:
             if img_str:
-                ProductImage.objects.create(produit=product, image=img_str)
+                try:
+                    ProductImage.objects.create(produit=product, image=img_str)
+                except Exception as e:
+                    print(f"ProductImage save warning: {e}")
         return product
 
     def update(self, instance, validated_data):
@@ -96,9 +102,16 @@ class ProductSerializer(serializers.ModelSerializer):
                     b64 = base64.b64encode(f.read()).decode('utf-8')
                     extra_images.append(f"data:{mime};base64,{b64}")
 
+        if not validated_data.get('image_principale') and extra_images:
+            validated_data['image_principale'] = extra_images[0]
+
         product = super().update(instance, validated_data)
         if extra_images:
             for img_str in extra_images:
                 if img_str:
-                    ProductImage.objects.create(produit=product, image=img_str)
+                    try:
+                        ProductImage.objects.create(produit=product, image=img_str)
+                    except Exception as e:
+                        print(f"ProductImage update warning: {e}")
         return product
+
