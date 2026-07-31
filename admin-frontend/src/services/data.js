@@ -115,67 +115,31 @@ export const productService = {
     },
     create: async (data) => {
         const catId = await getCategoryId(data.categoryId || data.category);
-        if (data.imageFile instanceof File || (data.extraImageFiles && data.extraImageFiles.length > 0)) {
-            const formData = new FormData();
-            formData.append("nom", data.name || data.nom);
-            formData.append("prix", data.price || data.prix);
-            formData.append("categorie_id", catId);
-            if (data.description) formData.append("description", data.description);
-            formData.append("est_publie", data.stock !== undefined ? data.stock : true);
-            if (data.imageFile instanceof File) {
-                formData.append("image_principale", data.imageFile);
-            }
-            if (data.extraImageFiles && data.extraImageFiles.length > 0) {
-                data.extraImageFiles.forEach(file => {
-                    formData.append("uploaded_images", file);
-                });
-            }
-
-            const res = await apiRequest("/products/", { method: "POST", body: formData });
-            return normalizeProduct(res);
-        } else {
-            const payload = {
-                nom: data.name || data.nom,
-                description: data.description || "",
-                prix: data.price || data.prix,
-                categorie_id: catId,
-                est_publie: data.stock !== undefined ? data.stock : true,
-            };
-            const res = await apiRequest("/products/", { method: "POST", body: payload });
-            return normalizeProduct(res);
-        }
+        const payload = {
+            nom: data.name || data.nom,
+            description: data.description || "",
+            prix: data.price || data.prix,
+            categorie_id: catId,
+            est_publie: data.stock !== undefined ? data.stock : true,
+            image_principale: data.image_principale || (data.images?.[0] || ""),
+            uploaded_images_data: data.uploaded_images_data || [],
+        };
+        const res = await apiRequest("/products/", { method: "POST", body: payload });
+        return normalizeProduct(res);
     },
     update: async (id, data) => {
         const catId = data.category ? await getCategoryId(data.category) : undefined;
-        if (data.imageFile instanceof File || (data.extraImageFiles && data.extraImageFiles.length > 0)) {
-            const formData = new FormData();
-            if (data.name !== undefined) formData.append("nom", data.name);
-            if (data.price !== undefined) formData.append("prix", data.price);
-            if (catId !== undefined) formData.append("categorie_id", catId);
-            if (data.description !== undefined) formData.append("description", data.description);
-            if (data.stock !== undefined) formData.append("est_publie", data.stock);
-            if (data.imageFile instanceof File) {
-                formData.append("image_principale", data.imageFile);
-            }
-            if (data.extraImageFiles && data.extraImageFiles.length > 0) {
-                data.extraImageFiles.forEach(file => {
-                    formData.append("uploaded_images", file);
-                });
-            }
+        const payload = {};
+        if (data.name !== undefined) payload.nom = data.name;
+        if (data.description !== undefined) payload.description = data.description;
+        if (data.price !== undefined) payload.prix = data.price;
+        if (catId !== undefined) payload.categorie_id = catId;
+        if (data.stock !== undefined) payload.est_publie = data.stock;
+        if (data.image_principale !== undefined) payload.image_principale = data.image_principale;
+        if (data.uploaded_images_data !== undefined) payload.uploaded_images_data = data.uploaded_images_data;
 
-            const res = await apiRequest(`/products/${id}/`, { method: "PATCH", body: formData });
-            return normalizeProduct(res);
-        } else {
-            const payload = {};
-            if (data.name !== undefined) payload.nom = data.name;
-            if (data.description !== undefined) payload.description = data.description;
-            if (data.price !== undefined) payload.prix = data.price;
-            if (catId !== undefined) payload.categorie_id = catId;
-            if (data.stock !== undefined) payload.est_publie = data.stock;
-
-            const res = await apiRequest(`/products/${id}/`, { method: "PATCH", body: payload });
-            return normalizeProduct(res);
-        }
+        const res = await apiRequest(`/products/${id}/`, { method: "PATCH", body: payload });
+        return normalizeProduct(res);
     },
     delete: async (id) => {
         await apiRequest(`/products/${id}/`, { method: "DELETE" });

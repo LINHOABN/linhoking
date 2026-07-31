@@ -3,6 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Save, Upload, X, Plus } from "lucide-react";
 import { productService, categoryService } from "../services/data.js";
 
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
 export default function AddProduct() {
     const navigate = useNavigate();
     const [params] = useSearchParams();
@@ -79,16 +86,26 @@ export default function AddProduct() {
         }
         setSaving(true);
         try {
+            let mainImageBase64 = form.imageUrl || "";
+            if (imageFile) {
+                mainImageBase64 = await fileToBase64(imageFile);
+            }
+
+            let extraImagesBase64 = [];
+            if (extraFiles && extraFiles.length > 0) {
+                extraImagesBase64 = await Promise.all(extraFiles.map(fileToBase64));
+            }
+
             const data = {
                 name: form.name.trim(),
                 price: Number(form.price),
                 category: form.category,
                 description: form.description.trim(),
-                imageFile: imageFile,
-                extraImageFiles: extraFiles,
-                images: form.imageUrl ? [form.imageUrl.trim()] : [],
+                image_principale: mainImageBase64,
+                uploaded_images_data: extraImagesBase64,
                 stock: form.stock,
             };
+
             if (editId) await productService.update(editId, data);
             else await productService.create(data);
             navigate("/produits");

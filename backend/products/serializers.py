@@ -10,14 +10,14 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'produit', 'image']
         read_only_fields = ['id']
 
-    def validate_image(self, value):
-        if not value:
-            raise serializers.ValidationError("Le fichier image est requis.")
-        return value
-
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
+    uploaded_images_data = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
+    )
     categorie_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
         source='categorie',
@@ -30,7 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nom', 'slug', 'description', 'prix', 
             'image_principale', 'categorie', 'categorie_id', 
-            'vues_count', 'images', 'date_creation', 'date_modification', 'est_publie'
+            'vues_count', 'images', 'uploaded_images_data', 'date_creation', 'date_modification', 'est_publie'
         ]
         read_only_fields = ['id', 'slug', 'vues_count', 'date_creation', 'date_modification', 'images']
 
@@ -56,19 +56,18 @@ class ProductSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        request = self.context.get('request')
+        extra_images = validated_data.pop('uploaded_images_data', [])
         product = super().create(validated_data)
-        if request and request.FILES:
-            images = request.FILES.getlist('uploaded_images')
-            for img in images:
-                ProductImage.objects.create(produit=product, image=img)
+        for img_str in extra_images:
+            if img_str:
+                ProductImage.objects.create(produit=product, image=img_str)
         return product
 
     def update(self, instance, validated_data):
-        request = self.context.get('request')
+        extra_images = validated_data.pop('uploaded_images_data', [])
         product = super().update(instance, validated_data)
-        if request and request.FILES:
-            images = request.FILES.getlist('uploaded_images')
-            for img in images:
-                ProductImage.objects.create(produit=product, image=img)
+        if extra_images:
+            for img_str in extra_images:
+                if img_str:
+                    ProductImage.objects.create(produit=product, image=img_str)
         return product
