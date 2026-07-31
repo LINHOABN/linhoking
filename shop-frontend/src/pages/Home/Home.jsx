@@ -29,7 +29,9 @@ export default function Home() {
     });
   }, [search, activeCategory]);
 
-  const previewProducts = products.slice(0, 4);
+  const showAll = searchParams.get("tous") === "1" || !!search || !!activeCategory;
+  const displayedProducts = showAll ? products : products.slice(0, 8);
+
 
   return (
     <div className={styles.page}>
@@ -85,10 +87,11 @@ export default function Home() {
         ) : (
           <>
             <div className={styles.productGrid}>
-              {previewProducts.map((product) => (
+              {displayedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
+
             {/* Pagination dots under product grid matching mockup */}
             <div className={styles.paginationDots}>
               <span className={`${styles.dot} ${styles.activeDot}`} />
