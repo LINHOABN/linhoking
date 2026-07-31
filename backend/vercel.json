@@ -6,29 +6,15 @@
             "use": "@vercel/python"
         }
     ],
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "*"
-                },
-                {
-                    "key": "Access-Control-Allow-Methods",
-                    "value": "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-                },
-                {
-                    "key": "Access-Control-Allow-Headers",
-                    "value": "X-CSRFToken, Content-Type, Authorization, Accept, Origin, User-Agent, DNT, X-Requested-With"
-                }
-            ]
-        }
-    ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "api/index.py"
+            "dest": "api/index.py",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "X-CSRFToken, Content-Type, Authorization, Accept, Origin, User-Agent, DNT, X-Requested-With"
+            }
         }
     ]
 }

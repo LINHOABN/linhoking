@@ -94,10 +94,10 @@ if _db_url:
     try:
         import dj_database_url as _dj
         DATABASES = {
-            'default': _dj.config(
-                default=_db_url,
-                conn_max_age=600,  # 600 seconds = reuse SQL connection across requests (fast serverless)
-                ssl_require=True,
+            'default': _dj.parse(
+                _db_url,
+                conn_max_age=0,  # 0 = close connection after each request (safe for serverless)
+                conn_health_checks=True,
             )
         }
     except Exception:
