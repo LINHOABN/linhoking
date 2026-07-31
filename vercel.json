@@ -6,6 +6,25 @@
             "use": "@vercel/python"
         }
     ],
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Access-Control-Allow-Methods",
+                    "value": "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+                },
+                {
+                    "key": "Access-Control-Allow-Headers",
+                    "value": "X-CSRFToken, Content-Type, Authorization, Accept, Origin, User-Agent, DNT, X-Requested-With"
+                }
+            ]
+        }
+    ],
     "routes": [
         {
             "src": "/(.*)",
