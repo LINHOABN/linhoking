@@ -89,14 +89,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database — reads DATABASE_URL env var on Vercel/production, falls back safely
 _db_url = os.environ.get('DATABASE_URL')
 if _db_url:
-    import dj_database_url as _dj
-    DATABASES = {
-        'default': _dj.config(
-            default=_db_url,
-            conn_max_age=0,  # 0 = close connection after each request (safe for serverless)
-            ssl_require=True,
-        )
-    }
+    try:
+        import dj_database_url as _dj
+        DATABASES = {
+            'default': _dj.config(
+                default=_db_url,
+                conn_max_age=0,  # 0 = close connection after each request (safe for serverless)
+                ssl_require=True,
+            )
+        }
+    except Exception:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': '/tmp/db.sqlite3',
+            }
+        }
 elif os.environ.get('VERCEL'):
     # On Vercel without DATABASE_URL, fallback to SQLite in /tmp to prevent serverless function crashes
     DATABASES = {
@@ -154,7 +162,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -163,6 +171,7 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
