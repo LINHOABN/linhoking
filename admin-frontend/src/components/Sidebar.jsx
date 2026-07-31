@@ -12,7 +12,7 @@ const NAV = [
     { to: "/messages", label: "Messages", icon: MessageSquare },
 ];
 
-const BOUTIQUE_URL = import.meta.env.VITE_SHOP_URL || "http://localhost:5173";
+import { SHOP_BASE_URL } from "../config.js";
 
 export default function Sidebar() {
     const { logout } = useAuth();
@@ -53,7 +53,7 @@ export default function Sidebar() {
                 {/* Bouton Prévisualiser la boutique */}
                 <button
                     className="sidebar-preview-btn"
-                    onClick={() => window.open(BOUTIQUE_URL, "_blank")}
+                    onClick={() => window.open(SHOP_BASE_URL, "_blank")}
                     title="Ouvrir la boutique dans un nouvel onglet"
                 >
                     <ExternalLink size={16} strokeWidth={1.8} />

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Send, Trash2, MessageSquare, ExternalLink, Package, PhoneCall, Tag } from "lucide-react";
 import { chatService } from "../services/data.js";
 
-const SHOP_BASE_URL = import.meta.env.VITE_SHOP_URL || "http://localhost:5173";
+import { SHOP_BASE_URL } from "../config.js";
 
 function fmt(v) { return v ? `${new Intl.NumberFormat("fr-FR").format(v)} FCFA` : ""; }
 

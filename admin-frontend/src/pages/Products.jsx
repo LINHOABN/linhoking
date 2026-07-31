@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Plus, Pencil, Trash2, Share2, Check } from "lucide-react";
 import { productService, categoryService } from "../services/data.js";
 
-const SHOP_BASE_URL = import.meta.env.VITE_SHOP_URL || "http://localhost:5173";
+import { SHOP_BASE_URL } from "../config.js";
 
 function fmt(v) { return `${new Intl.NumberFormat("fr-FR").format(v)} FCFA`; }
 
