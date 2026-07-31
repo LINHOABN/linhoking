@@ -89,7 +89,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database — reads DATABASE_URL env var on Vercel/production, falls back safely
 _db_url = os.environ.get('DATABASE_URL')
 if _db_url:
-    DATABASES = {'default': dj_database_url.config(default=_db_url, conn_max_age=600)}
+    import dj_database_url as _dj
+    DATABASES = {
+        'default': _dj.config(
+            default=_db_url,
+            conn_max_age=0,  # 0 = close connection after each request (safe for serverless)
+            ssl_require=True,
+        )
+    }
 elif os.environ.get('VERCEL'):
     # On Vercel without DATABASE_URL, fallback to SQLite in /tmp to prevent serverless function crashes
     DATABASES = {
