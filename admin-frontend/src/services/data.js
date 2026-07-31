@@ -23,10 +23,19 @@ export function normalizeCategory(c) {
 // Helper to normalize Django Product to Admin UI
 export function normalizeProduct(p) {
     if (!p) return null;
-    const mainImg = p.image_principale || (p.images && p.images.length > 0 ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].image) : null);
-    const imgList = p.images && p.images.length > 0
-        ? p.images.map(img => typeof img === 'string' ? img : img.image)
-        : (mainImg ? [mainImg] : ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"]);
+    const mainImg = p.image_principale || null;
+    const extraImgs = (p.images && p.images.length > 0)
+        ? p.images.map(img => typeof img === 'string' ? img : (img ? img.image : "")).filter(Boolean)
+        : [];
+
+    let imgList = [];
+    if (mainImg) {
+        imgList = [mainImg, ...extraImgs.filter(i => i !== mainImg)];
+    } else if (extraImgs.length > 0) {
+        imgList = extraImgs;
+    } else {
+        imgList = ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"];
+    }
 
     return {
         ...p,
@@ -37,9 +46,10 @@ export function normalizeProduct(p) {
         category: p.categorie ? (typeof p.categorie === 'object' ? (p.categorie.id || p.categorie.slug) : p.categorie) : (p.category || 1),
         stock: p.est_publie !== undefined ? p.est_publie : (p.stock ?? true),
         images: imgList,
-        image_principale: mainImg,
+        image_principale: imgList[0],
     };
 }
+
 
 // Helper to normalize Django Conversation/Messages to Admin UI
 export function normalizeConversation(c) {

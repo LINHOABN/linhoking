@@ -3,7 +3,8 @@ import { formatPrice } from "../../utils/formatPrice";
 import styles from "./ProductCard.module.css";
 
 export default function ProductCard({ product }) {
-  const imageUrl = product.images?.[0] || product.image_principale || "";
+  const imageUrl = product.image_principale || product.images?.[0] || "";
+
 
   return (
     <article className={styles.card}>
