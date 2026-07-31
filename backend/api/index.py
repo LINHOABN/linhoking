@@ -9,22 +9,5 @@ if backend_dir not in sys.path:
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 from django.core.wsgi import get_wsgi_application
-from django.core.management import call_command
 
 app = get_wsgi_application()
-
-# Ensure database tables exist on serverless boot
-try:
-    call_command('migrate', interactive=False)
-except Exception as e:
-    print(f"Auto-migration skipped/failed: {e}")
-
-try:
-    static_dir = os.path.join(backend_dir, 'static')
-    if not os.path.exists(static_dir) or not os.listdir(static_dir):
-        call_command('collectstatic', '--noinput', verbosity=0)
-except Exception:
-    pass
-
-
-

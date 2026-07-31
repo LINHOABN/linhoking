@@ -93,6 +93,34 @@ class ProductViewSet(viewsets.ModelViewSet):
                 'top_visited': []
             })
 
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({'detail': str(e), 'trace': traceback.format_exc()[-500:]}, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({'detail': str(e), 'trace': traceback.format_exc()[-500:]}, status=status.HTTP_400_BAD_REQUEST)
+
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            kwargs['partial'] = True
+            return self.update(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({'detail': str(e), 'trace': traceback.format_exc()[-500:]}, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ProductImageViewSet(viewsets.ModelViewSet):
     serializer_class = ProductImageSerializer
@@ -103,3 +131,4 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'destroy', 'update', 'partial_update']:
             return [IsAdminUser()]
         return [IsAdminOrReadOnly()]
+
