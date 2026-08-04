@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { Menu, Bell, BellCheck } from "lucide-react";
+import { Menu, Bell, BellRing } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { registerPushSubscription, getPushPermissionState } from "../utils/push.js";
 import Sidebar from "./Sidebar.jsx";
@@ -78,7 +78,7 @@ export default function AdminLayout() {
                             cursor: "pointer"
                         }}
                     >
-                        {pushState === "granted" ? <BellCheck size={15} /> : <Bell size={15} />}
+                        {pushState === "granted" ? <BellRing size={15} /> : <Bell size={15} />}
                         {pushState === "granted" ? "Push Actif" : "Activer Push 🔔"}
                     </button>
                     <button

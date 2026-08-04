@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard, Package, Tags, MessageSquare,
-    LogOut, ExternalLink, X, Bell, BellCheck
+    LogOut, ExternalLink, X, Bell, BellRing
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNotifications } from "../context/NotificationContext.jsx";
@@ -101,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     }}
                     title="Cliquer pour activer les notifications hors-site"
                 >
-                    {pushState === "granted" ? <BellCheck size={16} /> : <Bell size={16} />}
+                    {pushState === "granted" ? <BellRing size={16} /> : <Bell size={16} />}
                     {pushState === "granted" ? "Notifications Actives" : "Activer Push 🔔"}
                 </button>
 
