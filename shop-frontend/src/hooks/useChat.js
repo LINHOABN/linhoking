@@ -118,7 +118,23 @@ export function useChat(productId) {
 
   useEffect(() => {
     load();
-  }, [load]);
+    const interval = setInterval(async () => {
+      const savedId = getSavedConvoId(productId);
+      if (!savedId) return;
+      try {
+        const convo = await chatService.getConversation(savedId);
+        if (convo?.messages) {
+          const newMessages = normalizeMessages(convo.messages);
+          setConversation((prev) => {
+            if (!prev) return prev;
+            if (prev.messages.length === newMessages.length) return prev;
+            return { ...prev, messages: newMessages };
+          });
+        }
+      } catch (_) { }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [load, productId]);
 
   const registerVisitor = useCallback(
     (name, contact) => {

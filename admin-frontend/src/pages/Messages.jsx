@@ -12,8 +12,15 @@ export default function Messages() {
     const [reply, setReply] = useState("");
     const [sending, setSending] = useState(false);
 
-    function reload() { chatService.getAll().then(setConversations); }
-    useEffect(reload, []);
+    function reload() {
+        chatService.getAll().then(setConversations);
+    }
+
+    useEffect(() => {
+        reload();
+        const interval = setInterval(reload, 3000);
+        return () => clearInterval(interval);
+    }, []);
 
     function openConv(cv) {
         chatService.markRead(cv.id);
