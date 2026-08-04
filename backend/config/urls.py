@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 
 from django.http import JsonResponse
 from core.notifications_views import notifications_admin, notifications_shop
+from core.push_views import get_vapid_key, subscribe_push
 
 def api_root(request):
     return JsonResponse({
@@ -44,6 +45,8 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('api/notifications/', notifications_admin, name='notifications-admin'),
     path('api/notifications/shop/', notifications_shop, name='notifications-shop'),
+    path('api/push/vapid-key/', get_vapid_key, name='push-vapid-key'),
+    path('api/push/subscribe/', subscribe_push, name='push-subscribe'),
 ]
 
 if settings.DEBUG:

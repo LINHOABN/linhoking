@@ -104,6 +104,9 @@ export function useChat(productId) {
           messages: normalizeMessages(convo.messages || []),
         };
         setConversation(normalized);
+        if (convo?.id) {
+          import("../utils/push.js").then((m) => m.registerClientPushSubscription(convo.id));
+        }
       } catch (err) {
         setError(err.message || "Impossible d'ouvrir la conversation.");
       } finally {

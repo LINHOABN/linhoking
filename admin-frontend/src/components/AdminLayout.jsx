@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { registerPushSubscription } from "../utils/push.js";
 import Sidebar from "./Sidebar.jsx";
 
 export default function AdminLayout() {
     const { isAuthenticated, initializing } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            registerPushSubscription(true);
+        }
+    }, [isAuthenticated]);
 
     if (initializing) {
         return (

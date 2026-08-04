@@ -37,6 +37,17 @@ class MessageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         if user and user.is_authenticated and user.is_staff:
-            serializer.save(expediteur='ADMIN')
+            msg = serializer.save(expediteur='ADMIN')
+            try:
+                from core.push_service import notify_client_new_message
+                notify_client_new_message(msg.conversation_id, msg.message)
+            except Exception as e:
+                print(f"Push notify client error: {e}")
         else:
-            serializer.save(expediteur='VISITEUR')
+            msg = serializer.save(expediteur='VISITEUR')
+            try:
+                from core.push_service import notify_admin_new_message
+                nom = msg.conversation.nom_visiteur if msg.conversation else "Client"
+                notify_admin_new_message(nom, msg.message)
+            except Exception as e:
+                print(f"Push notify admin error: {e}")
