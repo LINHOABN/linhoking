@@ -11,29 +11,29 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
+export function getPushPermissionState() {
+    if (!('Notification' in window)) return 'unsupported';
+    return Notification.permission; // 'default', 'granted', 'denied'
+}
+
 export async function registerPushSubscription(isAdmin = true, conversationId = null) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         console.warn('Push non supporté par ce navigateur');
-        return false;
+        return { success: false, reason: 'unsupported' };
     }
 
     try {
-        // Demande la permission à l'utilisateur
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
-            console.log('Permission notification refusée');
-            return false;
+            return { success: false, reason: permission };
         }
 
-        // Enregistre le service worker
         const reg = await navigator.serviceWorker.register('/sw.js');
         await navigator.serviceWorker.ready;
 
-        // Récupère la clé publique VAPID
         const vapidData = await apiRequest('/push/vapid-key/');
         const applicationServerKey = urlBase64ToUint8Array(vapidData.public_key);
 
-        // S'abonne au PushManager
         const subscription = await reg.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey
@@ -41,7 +41,6 @@ export async function registerPushSubscription(isAdmin = true, conversationId = 
 
         const subJson = subscription.toJSON();
 
-        // Envoie au backend
         await apiRequest('/push/subscribe/', {
             method: 'POST',
             body: {
@@ -52,10 +51,9 @@ export async function registerPushSubscription(isAdmin = true, conversationId = 
             }
         });
 
-        console.log('Push abonné avec succès !');
-        return true;
+        return { success: true, reason: 'granted' };
     } catch (err) {
         console.error('Erreur inscription push:', err);
-        return false;
+        return { success: false, reason: err.message };
     }
 }

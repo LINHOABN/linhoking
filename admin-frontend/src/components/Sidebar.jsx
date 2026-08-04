@@ -1,16 +1,36 @@
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard, Package, Tags, MessageSquare,
-    LogOut, ExternalLink, X
+    LogOut, ExternalLink, X, Bell, BellCheck
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNotifications } from "../context/NotificationContext.jsx";
+import { registerPushSubscription, getPushPermissionState } from "../utils/push.js";
 import { SHOP_BASE_URL } from "../config.js";
 
 export default function Sidebar({ isOpen, onClose }) {
     const { logout } = useAuth();
     const { unreadMessages, newProducts, clearMessages, clearProducts } = useNotifications();
     const navigate = useNavigate();
+    const [pushState, setPushState] = useState(() => getPushPermissionState());
+    const [pushLoading, setPushLoading] = useState(false);
+
+    useEffect(() => {
+        setPushState(getPushPermissionState());
+    }, []);
+
+    async function handleEnablePush() {
+        setPushLoading(true);
+        const res = await registerPushSubscription(true);
+        setPushState(getPushPermissionState());
+        setPushLoading(false);
+        if (res.success) {
+            alert("✅ Notifications Push activées avec succès ! Vous recevrez des alertes même site fermé.");
+        } else if (res.reason === "denied") {
+            alert("⚠️ Les notifications ont été bloquées dans votre navigateur. Veuillez cliquer sur le cadenas à côté de l'URL pour autoriser les notifications.");
+        }
+    }
 
     function handleLogout() {
         logout();
@@ -67,6 +87,23 @@ export default function Sidebar({ isOpen, onClose }) {
                 ))}
 
                 <div className="sidebar-divider" />
+
+                {/* Bouton pour activer les notifications Push navigateur */}
+                <button
+                    className="sidebar-preview-btn"
+                    onClick={handleEnablePush}
+                    disabled={pushLoading}
+                    style={{
+                        marginBottom: 6,
+                        background: pushState === "granted" ? "rgba(34, 197, 94, 0.15)" : "rgba(245, 158, 11, 0.15)",
+                        borderColor: pushState === "granted" ? "rgba(34, 197, 94, 0.4)" : "rgba(245, 158, 11, 0.4)",
+                        color: pushState === "granted" ? "#22c55e" : "#f59e0b"
+                    }}
+                    title="Cliquer pour activer les notifications hors-site"
+                >
+                    {pushState === "granted" ? <BellCheck size={16} /> : <Bell size={16} />}
+                    {pushState === "granted" ? "Notifications Actives" : "Activer Push 🔔"}
+                </button>
 
                 <button
                     className="sidebar-preview-btn"
