@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.http import JsonResponse
+from core.notifications_views import notifications_admin, notifications_shop
 
 def api_root(request):
     return JsonResponse({
@@ -41,6 +42,8 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/chat/', include('chat.urls')),
     path('api/', include('users.urls')),
+    path('api/notifications/', notifications_admin, name='notifications-admin'),
+    path('api/notifications/shop/', notifications_shop, name='notifications-shop'),
 ]
 
 if settings.DEBUG:

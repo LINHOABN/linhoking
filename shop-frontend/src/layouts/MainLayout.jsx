@@ -2,6 +2,7 @@ import { Outlet, useSearchParams, useNavigate, useLocation } from "react-router-
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import ChatWidget from "../components/ChatWidget/ChatWidget";
+import NewProductToast from "../components/NewProductToast/NewProductToast";
 
 export default function MainLayout() {
   const [searchParams] = useSearchParams();
@@ -25,6 +26,8 @@ export default function MainLayout() {
       </main>
       <Footer />
       <ChatWidget />
+      <NewProductToast />
     </>
   );
 }
+
